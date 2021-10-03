@@ -24,6 +24,9 @@ class HomePageTest(TestCase):
         self.assertIn(context['new-item'], html)
         self.assertTemplateUsed(response, 'lists/index.html')
         
+    def test_home_page_can_save_a_post_with_necessary(self):
+        response = self.client.get('/')
+        self.assertEqual(0, Item.objects.count())
 
 class ItemAndListTest(TestCase):
 
