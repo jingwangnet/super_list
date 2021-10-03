@@ -33,6 +33,15 @@ class HomePageTest(TestCase):
         response = self.client.get('/')
         self.assertEqual(0, Item.objects.count())
 
+    def test_home_page_can_display_all_item(self):
+        Item.objects.create(text='first item')
+        Item.objects.create(text='second item')
+        
+        response = self.client.get('/')
+
+        self.assertContains(response, 'first item')
+        self.assertContains(response, 'second item')
+
 class ItemAndListTest(TestCase):
 
 
