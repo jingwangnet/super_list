@@ -19,6 +19,15 @@ class NewVisitorTest(unittest.TestCase):
    def tearDown(self):
        self.browser.close()
 
+   def check_row_in_the_table(self, TEXT):
+       table = self.browser.find_element(By.ID, 'id-list-table')
+       rows = table.find_elements(By.TAG_NAME, 'tr')
+
+       self.assertIn(
+           TEXT,
+           [row.text for row in rows]
+       )
+
    def test_start_a_list_and_retrieve_it_later(self):
        # John visits the website
        try:
@@ -48,18 +57,20 @@ class NewVisitorTest(unittest.TestCase):
        time.sleep(1) 
 
        # '1. I will go shoping.' appears the table of the page.
-       table = self.browser.find_element(By.ID, 'id-list-table')
-       rows = table.find_elements(By.TAG_NAME, 'tr')
-
-       self.assertIn(
-           '1. ' + 'I will go shoping',
-           [row.text for row in rows]
-       )
+       self.check_row_in_the_table('1. ' + 'I will go shoping')
 
        # John submit 'I will have a date with mary.' agian
+       inputbox = self.browser.find_element(By.ID, 'id-new-item')
+       inputbox.send_keys('I will have a date with mary')
+       inputbox.send_keys(Keys.ENTER)
+
+       time.sleep(1) 
 
        # '2. I will have a date with mary.' appears the table of the page.
        # '1. I will go shoping.' appears the table of the page.
+
+       self.check_row_in_the_table('2. ' + 'I will have a date with mary')
+       self.check_row_in_the_table('1. ' + 'I will go shoping')
 
 
 if __name__ == '__main__':
