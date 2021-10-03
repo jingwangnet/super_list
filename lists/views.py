@@ -3,5 +3,6 @@ from django.http import HttpResponse
 
 # Create your views here.
 def home_page(request):
-    return render(request, 'lists/index.html')
+    context = {'new_item': request.POST.get('new-item', '')}
+    return render(request, 'lists/index.html', context)
     

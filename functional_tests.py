@@ -52,7 +52,7 @@ class NewVisitorTest(unittest.TestCase):
        rows = table.find_elements(By.TAG_NAME, 'tr')
 
        self.assertIn(
-           '1. ' + 'Submit a item for saving',
+           '1. ' + 'I will go shoping',
            [row.text for row in rows]
        )
 

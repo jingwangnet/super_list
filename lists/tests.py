@@ -7,16 +7,15 @@ from .views import home_page
 class HomePageTest(TestCase):
 
 
-    def test_can_resolve_root_url(self):
-        found = resolve('/')
-        self.assertEqual(found.func, home_page)
-
     def test_home_page_can_return_correct_content(self):
-        request = HttpRequest()
-        response = home_page(request)
-        content = response.content.decode()
+        response = self.client.get('/')
+        self.assertTemplateUsed(response, 'lists/index.html')
 
-        self.assertTrue(content.startswith('<html>'), content)
-        self.assertIn('<title>To-Do lists</title>', content)
-        self.assertTrue(content.strip().endswith('</html>'), content)
+    def test_home_page_can_save_a_post_request(self):
+        context = {'new-item': 'A new item'}
+        response = self.client.post('/', data=context)
+        html = response.content.decode()
+
+        self.assertIn(context['new-item'], html)
+        self.assertTemplateUsed(response, 'lists/index.html')
         

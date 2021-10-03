@@ -8,8 +8,12 @@
     <h1>To-Do lists</h1>
   </header>
   <main>
-    <input id="id-new-item" placeholder="Submit a item for saving">
+    <form method="POST">
+    <input id="id-new-item" name='new-item' placeholder="Submit a item for saving">
+    {% csrf_token %}
+    </form>
     <table id="id-list-table">
+      <tr><td>1. {{ new_item }}</td></tr>
     </table>
   </main>
 </body>
