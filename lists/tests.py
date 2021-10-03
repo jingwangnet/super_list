@@ -17,6 +17,10 @@ class HomePageTest(TestCase):
         response = self.client.post('/', data=context)
         html = response.content.decode()
 
+        self.assertEqual(1, Item.objects.count())
+        item = Item.objects.first()
+        self.assertEqual(item.text, context['new-item'])
+
         self.assertIn(context['new-item'], html)
         self.assertTemplateUsed(response, 'lists/index.html')
         
