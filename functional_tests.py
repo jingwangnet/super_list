@@ -1,8 +1,10 @@
 from selenium.webdriver.firefox.options import Options
 from selenium.common.exceptions import WebDriverException
+from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
 from selenium import webdriver
 import unittest
+import time
 
 
 class NewVisitorTest(unittest.TestCase):
@@ -31,16 +33,33 @@ class NewVisitorTest(unittest.TestCase):
 
 
        # There is a inputbox
+       inputbox = self.browser.find_element(By.ID, 'id-new-item')
 
        # 'Submit a item for saving' in the inputbox
+       self.assertEqual(
+           inputbox.get_attribute('placeholder'),
+           'Submit a item for saving'
+       )
 
        # John submit 'I will go shoping.'
-       
+       inputbox.send_keys('I will go shoping')
+       inputbox.send_keys(Keys.ENTER)
+
+       time.sleep(1) 
+
        # '1. I will go shoping.' appears the table of the page.
+       table = self.browser.find_element(By.ID, 'id-list-table')
+       rows = table.find_elements(By.TAG_NAME, 'tr')
+
+       self.assertIn(
+           '1. ' + 'Submit a item for saving',
+           [row.text for row in rows]
+       )
 
        # John submit 'I will have a date with mary.' agian
 
        # '2. I will have a date with mary.' appears the table of the page.
+       # '1. I will go shoping.' appears the table of the page.
 
 
 if __name__ == '__main__':
