@@ -1,5 +1,6 @@
 from selenium.webdriver.firefox.options import Options
 from selenium.common.exceptions import WebDriverException
+from selenium.webdriver.common.by import By
 from selenium import webdriver
 import unittest
 
@@ -25,6 +26,9 @@ class NewVisitorTest(unittest.TestCase):
        
        # There is "To-Do" in the title and header_text
        self.assertIn('To-Do', self.browser.title)
+       header_text = self.browser.find_element(By.TAG_NAME, 'h1').text
+       self.assertIn('To-Do', header_text)
+
 
        # There is a inputbox
 
