@@ -22,7 +22,7 @@ class NewVisitorTest(unittest.TestCase):
        except WebDriverException:
            pass   
        
-       self.assertIn('succese', self.browser.title)
+       self.assertIn('To-Do', self.browser.title)
        
 
 if __name__ == '__main__':
