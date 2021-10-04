@@ -3,11 +3,14 @@ from selenium.common.exceptions import WebDriverException
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
 from selenium import webdriver
+from django.test import LiveServerTestCase
 import unittest
 import time
 
+MAX_TIME = 3
 
-class NewVisitorTest(unittest.TestCase):
+
+class NewVisitorTest(LiveServerTestCase):
    
 
    def setUp(self):
@@ -19,19 +22,31 @@ class NewVisitorTest(unittest.TestCase):
    def tearDown(self):
        self.browser.close()
 
-   def check_row_in_the_table(self, TEXT):
-       table = self.browser.find_element(By.ID, 'id-list-table')
-       rows = table.find_elements(By.TAG_NAME, 'tr')
+   def wait_for_check_row_in_the_table(self, TEXT):
+       START_TIME = time.time()
+       while True:
+           try:
+               table = self.browser.find_element(By.ID, 'id-list-table')
+               rows = table.find_elements(By.TAG_NAME, 'tr')
 
-       self.assertIn(
-           TEXT,
-           [row.text for row in rows]
-       )
+               self.assertIn(
+                   TEXT,
+                   [row.text for row in rows]
+               )
+               return 
+           except (AssertionError, WebDriverException) as e:
+               if time.time() - START_TIME > MAX_TIME:
+                   raise e
+               time.sleep(0.2)
+
+
+
+
 
    def test_start_a_list_and_retrieve_it_later(self):
        # John visits the website
        try:
-           self.browser.get('http://127.0.0.1:8000')
+           self.browser.get(self.live_server_url)
        except WebDriverException:
            pass   
        
@@ -57,7 +72,7 @@ class NewVisitorTest(unittest.TestCase):
        time.sleep(1) 
 
        # '1. I will go shoping.' appears the table of the page.
-       self.check_row_in_the_table('1. ' + 'I will go shoping')
+       self.wait_for_check_row_in_the_table('1. ' + 'I will go shoping')
 
        # John submit 'I will have a date with mary.' agian
        inputbox = self.browser.find_element(By.ID, 'id-new-item')
@@ -69,9 +84,7 @@ class NewVisitorTest(unittest.TestCase):
        # '2. I will have a date with mary.' appears the table of the page.
        # '1. I will go shoping.' appears the table of the page.
 
-       self.check_row_in_the_table('2. ' + 'I will have a date with mary')
-       self.check_row_in_the_table('1. ' + 'I will go shoping')
+       self.wait_for_check_row_in_the_table('2. ' + 'I will have a date with mary')
+       self.wait_for_check_row_in_the_table('1. ' + 'I will go shoping')
 
 
-if __name__ == '__main__':
-    unittest.main()
