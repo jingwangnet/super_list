@@ -27,20 +27,29 @@ class HomePageTest(TestCase):
         html = response.content.decode()
 
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response['location'], '/')
+        self.assertEqual(response['location'], '/list/the-only-url/')
         
     def test_home_page_can_save_a_post_with_necessary(self):
         response = self.client.get('/')
         self.assertEqual(0, Item.objects.count())
 
+
+class ViewListTest(TestCase):
+
+
+    def test_home_page_can_return_correct_content(self):
+        response = self.client.get('/list/the-only-url/')
+        self.assertTemplateUsed(response, 'lists/list.html')
+
     def test_home_page_can_display_all_item(self):
         Item.objects.create(text='first item')
         Item.objects.create(text='second item')
         
-        response = self.client.get('/')
+        response = self.client.get('/list/the-only-url/')
 
         self.assertContains(response, 'first item')
         self.assertContains(response, 'second item')
+
 
 class ItemAndListTest(TestCase):
 

@@ -12,6 +12,11 @@
     <input id="id-new-item" name='new-item' placeholder="Submit a item for saving">
     {% csrf_token %}
     </form>
+    <table id="id-list-table">
+      {% for item in items %}
+      <tr><td>{{ forloop.counter }}. {{ item.text }}</td></tr>
+      {% endfor %}
+    </table>
   </main>
 </body>
 </html>
