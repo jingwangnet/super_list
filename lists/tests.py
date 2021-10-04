@@ -12,36 +12,36 @@ class HomePageTest(TestCase):
         response = self.client.get('/')
         self.assertTemplateUsed(response, 'lists/index.html')
 
-    def test_home_page_can_save_a_post_request(self):
+
+class NewListTest(TestCase):
+
+
+    def test_new_list_can_save_a_post_request(self):
         context = {'new-item': 'A new item'}
-        response = self.client.post('/', data=context)
+        response = self.client.post('/list/new', data=context)
         html = response.content.decode()
 
         self.assertEqual(1, Item.objects.count())
         item = Item.objects.first()
         self.assertEqual(item.text, context['new-item'])
 
-    def test_home_page_can_redirect_after_post_request(self):
+    def test_new_list_can_redirect_after_post_request(self):
         context = {'new-item': 'A new item'}
-        response = self.client.post('/', data=context)
+        response = self.client.post('/list/new', data=context)
         html = response.content.decode()
 
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response['location'], '/list/the-only-url/')
-        
-    def test_home_page_can_save_a_post_with_necessary(self):
-        response = self.client.get('/')
-        self.assertEqual(0, Item.objects.count())
 
 
 class ViewListTest(TestCase):
 
 
-    def test_home_page_can_return_correct_content(self):
+    def test_view_list_can_return_correct_content(self):
         response = self.client.get('/list/the-only-url/')
         self.assertTemplateUsed(response, 'lists/list.html')
 
-    def test_home_page_can_display_all_item(self):
+    def test_view_list_can_display_all_item(self):
         Item.objects.create(text='first item')
         Item.objects.create(text='second item')
         
@@ -50,7 +50,7 @@ class ViewListTest(TestCase):
         self.assertContains(response, 'first item')
         self.assertContains(response, 'second item')
 
-
+        
 class ItemAndListTest(TestCase):
 
 
