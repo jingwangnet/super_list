@@ -2,7 +2,7 @@ from django.test import TestCase
 from django.urls import resolve
 from django.http import HttpRequest
 from .views import home_page
-from .models import Item
+from .models import Item, List
 
 # Create your tests here.
 class HomePageTest(TestCase):
@@ -42,8 +42,9 @@ class ViewListTest(TestCase):
         self.assertTemplateUsed(response, 'lists/list.html')
 
     def test_view_list_can_display_all_item(self):
-        Item.objects.create(text='first item')
-        Item.objects.create(text='second item')
+        list_ = List.objects.create()
+        Item.objects.create(text='first item', list=list_)
+        Item.objects.create(text='second item', list=list_)
         
         response = self.client.get('/list/the-only-url/')
 
@@ -55,18 +56,23 @@ class ItemAndListTest(TestCase):
 
 
     def test_start_two_item_and_retrieve_it_later(self):
+        list_ = List.objects.create()
         first_item = Item()
         first_item.text = 'first item'
+        first_item.list = list_
         first_item.save()
 
         second_item = Item()
         second_item.text = 'second item'
+        second_item.list = list_
         second_item.save()
 
-        saved_item = Item.objects.all()
+        saved_item = list_.item_set.all()
         self.assertEqual(2, len(saved_item))
 
         first_saved_item, second_saved_item = saved_item
 
         self.assertEqual(first_saved_item.text, 'first item')
+        self.assertEqual(first_saved_item.list, list_)
         self.assertEqual(second_saved_item.text, 'second item')
+        self.assertEqual(second_saved_item.list, list_)
