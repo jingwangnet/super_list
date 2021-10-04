@@ -31,8 +31,7 @@ class NewListTest(TestCase):
         list_ = List.objects.first()
         html = response.content.decode()
 
-        self.assertEqual(response.status_code, 302)
-        self.assertEqual(response['location'], f'/list/{list_.pk}/')
+        self.assertRedirects(response, f'/list/{list_.pk}/')
 
 
 class ViewListTest(TestCase):

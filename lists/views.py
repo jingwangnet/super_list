@@ -8,7 +8,7 @@ def home_page(request):
     
 def new_list(request):
     list_ = List.objects.create()
-    item = Item.objects.create(text=request.POST.get('new-item', ''), list=list_)
+    item = Item.objects.create(text=request.POST['new-item'], list=list_)
     return redirect(f'/list/{list_.pk}/')
 
 def view_list(request, pk):
@@ -18,5 +18,5 @@ def view_list(request, pk):
     
 def add_item(request, pk):
     list_ = List.objects.get(pk=pk)
-    item = Item.objects.create(text=request.POST.get('new-item', ''), list=list_)
+    item = Item.objects.create(text=request.POST['new-item'], list=list_)
     return redirect(f'/list/{list_.pk}/')
