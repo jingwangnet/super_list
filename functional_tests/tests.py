@@ -13,78 +13,96 @@ MAX_TIME = 3
 class NewVisitorTest(LiveServerTestCase):
    
 
-   def setUp(self):
-       options = Options()
-       options.headless = True
+    def setUp(self):
+        options = Options()
+        options.headless = True
 
-       self.browser = webdriver.Firefox(options=options)
+        self.browser = webdriver.Firefox(options=options)
 
-   def tearDown(self):
-       self.browser.close()
+    def tearDown(self):
+        self.browser.close()
 
-   def wait_for_check_row_in_the_table(self, TEXT):
-       START_TIME = time.time()
-       while True:
-           try:
-               table = self.browser.find_element(By.ID, 'id-list-table')
-               rows = table.find_elements(By.TAG_NAME, 'tr')
+    def wait_for_check_row_in_the_table(self, TEXT):
+        START_TIME = time.time()
+        while True:
+            try:
+                table = self.browser.find_element(By.ID, 'id-list-table')
+                rows = table.find_elements(By.TAG_NAME, 'tr')
 
-               self.assertIn(
-                   TEXT,
-                   [row.text for row in rows]
-               )
-               return 
-           except (AssertionError, WebDriverException) as e:
-               if time.time() - START_TIME > MAX_TIME:
-                   raise e
-               time.sleep(0.2)
-
-
+                self.assertIn(
+                    TEXT,
+                    [row.text for row in rows]
+                )
+                return 
+            except (AssertionError, WebDriverException) as e:
+                if time.time() - START_TIME > MAX_TIME:
+                    raise e
+                time.sleep(0.2)
 
 
 
-   def test_start_a_list_and_retrieve_it_later(self):
-       # John visits the website
-       try:
-           self.browser.get(self.live_server_url)
-       except WebDriverException:
-           pass   
-       
-       # There is "To-Do" in the title and header_text
-       self.assertIn('To-Do', self.browser.title)
-       header_text = self.browser.find_element(By.TAG_NAME, 'h1').text
-       self.assertIn('To-Do', header_text)
 
 
-       # There is a inputbox
-       inputbox = self.browser.find_element(By.ID, 'id-new-item')
+    def test_start_a_list_and_retrieve_it_later(self):
+        # John visits the website
+        try:
+            self.browser.get(self.live_server_url)
+        except WebDriverException:
+            pass   
+        
+        # There is "To-Do" in the title and header_text
+        self.assertIn('To-Do', self.browser.title)
+        header_text = self.browser.find_element(By.TAG_NAME, 'h1').text
+        self.assertIn('To-Do', header_text)
 
-       # 'Submit a item for saving' in the inputbox
-       self.assertEqual(
-           inputbox.get_attribute('placeholder'),
-           'Submit a item for saving'
-       )
 
-       # John submit 'I will go shoping.'
-       inputbox.send_keys('I will go shoping')
-       inputbox.send_keys(Keys.ENTER)
+        # There is a inputbox
+        inputbox = self.browser.find_element(By.ID, 'id-new-item')
 
-       time.sleep(1) 
+        # 'Submit a item for saving' in the inputbox
+        self.assertEqual(
+            inputbox.get_attribute('placeholder'),
+            'Submit a item for saving'
+        )
 
-       # '1. I will go shoping.' appears the table of the page.
-       self.wait_for_check_row_in_the_table('1. ' + 'I will go shoping')
+        # John submit 'I will go shoping.'
+        inputbox.send_keys('I will go shoping')
+        inputbox.send_keys(Keys.ENTER)
 
-       # John submit 'I will have a date with mary.' agian
-       inputbox = self.browser.find_element(By.ID, 'id-new-item')
-       inputbox.send_keys('I will have a date with mary')
-       inputbox.send_keys(Keys.ENTER)
+        time.sleep(1) 
 
-       time.sleep(1) 
+        # '1. I will go shoping.' appears the table of the page.
+        self.wait_for_check_row_in_the_table('1. ' + 'I will go shoping')
 
-       # '2. I will have a date with mary.' appears the table of the page.
-       # '1. I will go shoping.' appears the table of the page.
+        # John submit 'I will have a date with mary.' agian
+        inputbox = self.browser.find_element(By.ID, 'id-new-item')
+        inputbox.send_keys('I will have a date with mary')
+        inputbox.send_keys(Keys.ENTER)
 
-       self.wait_for_check_row_in_the_table('2. ' + 'I will have a date with mary')
-       self.wait_for_check_row_in_the_table('1. ' + 'I will go shoping')
+        time.sleep(1) 
+
+        # '2. I will have a date with mary.' appears the table of the page.
+        # '1. I will go shoping.' appears the table of the page.
+
+        self.wait_for_check_row_in_the_table('2. ' + 'I will have a date with mary')
+        self.wait_for_check_row_in_the_table('1. ' + 'I will go shoping')
+
+
+    def test_create_multiple_list_at_the_diffrent_url(self):
+        # John visits the website 
+        # John submits 'I will have a date with mary'
+        # He saw '1. I will have a date with mary' after the page redirected
+        # He feels good and leaving
+        # the url match the URL pattern '/list/.*/'
+
+        # Joe visits the website too
+        # Joe expects that item of John does not appear the page 
+        # Joe submits 'Do my homework'  
+        # He saw '1. Do my homework'
+        # Joe expects that item of John does not appear the page 
+        # the url match the URL pattern '/list/.*/'
+        # the url is not same as John's 
+        
+        
 
 
