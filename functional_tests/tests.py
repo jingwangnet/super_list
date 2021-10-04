@@ -119,10 +119,10 @@ class NewVisitorTest(LiveServerTestCase):
         html = self.browser.page_source
         self.assertNotIn('I will have a date with mary', html)
         # the url match the URL pattern '/list/.*/'
-        URL_OF_JOE = self.brower.current_url
+        URL_OF_JOE = self.browser.current_url
         self.assertRegex(URL_OF_JOE, '/list/.*/')
         # the url is not same as John's 
-        self.asserrtNotEqual(URL_OF_JOE, URL_OF_JOHN)
+        self.assertNotEqual(URL_OF_JOE, URL_OF_JOHN)
         
         
 
