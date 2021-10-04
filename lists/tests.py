@@ -28,28 +28,36 @@ class NewListTest(TestCase):
     def test_new_list_can_redirect_after_post_request(self):
         context = {'new-item': 'A new item'}
         response = self.client.post('/list/new', data=context)
+        list_ = List.objects.first()
         html = response.content.decode()
 
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response['location'], '/list/the-only-url/')
+        self.assertEqual(response['location'], f'/list/{list_.pk}/')
 
 
 class ViewListTest(TestCase):
 
 
     def test_view_list_can_return_correct_content(self):
-        response = self.client.get('/list/the-only-url/')
+        list_ = List.objects.create()
+        response = self.client.get(f'/list/{list_.pk}/')
         self.assertTemplateUsed(response, 'lists/list.html')
 
-    def test_view_list_can_display_all_item(self):
-        list_ = List.objects.create()
-        Item.objects.create(text='first item', list=list_)
-        Item.objects.create(text='second item', list=list_)
+    def test_view_list_can_display_all_item_for_the_list(self):
+        other_list = List.objects.create()
+        Item.objects.create(text='other first item', list=other_list)
+        Item.objects.create(text='other second item', list=other_list)
         
-        response = self.client.get('/list/the-only-url/')
+        correct_list = List.objects.create()
+        Item.objects.create(text='first item', list=correct_list)
+        Item.objects.create(text='second item', list=correct_list)
+        
+        response = self.client.get(f'/list/{correct_list.pk}/')
 
         self.assertContains(response, 'first item')
         self.assertContains(response, 'second item')
+        self.assertNotContains(response, 'other first item')
+        self.assertNotContains(response, 'other second item')
 
         
 class ItemAndListTest(TestCase):

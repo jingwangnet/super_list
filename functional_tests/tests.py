@@ -111,7 +111,7 @@ class NewVisitorTest(LiveServerTestCase):
         self.assertNotIn('I will have a date with mary', html)
         # Joe submits 'Do my homework'  
         inputbox = self.browser.find_element(By.ID, 'id-new-item')
-        inputbox.send_keys('Do my home work')
+        inputbox.send_keys('Do my homework')
         inputbox.send_keys(Keys.ENTER)
         # He saw '1. Do my homework'
         self.wait_for_check_row_in_the_table('1. ' + 'Do my homework')

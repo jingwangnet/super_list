@@ -9,10 +9,11 @@ def home_page(request):
 def new_list(request):
     list_ = List.objects.create()
     item = Item.objects.create(text=request.POST.get('new-item', ''), list=list_)
-    return redirect('/list/the-only-url/')
+    return redirect(f'/list/{list_.pk}/')
 
-def view_list(request):
-    items = Item.objects.all()
+def view_list(request, pk):
+    list_ = List.objects.get(pk=pk)
+    items = list_.item_set.all()
     context = {'items': items}
     return render(request, 'lists/list.html', context)
     

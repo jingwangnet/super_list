@@ -21,5 +21,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.home_page, name='home'),
     path('list/new', views.new_list, name='new'),
-    path('list/the-only-url/', views.view_list, name='view'),
+    path('list/<int:pk>/', views.view_list, name='view'),
 ]
