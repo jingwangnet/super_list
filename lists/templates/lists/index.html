@@ -1,17 +1,4 @@
-<html>
-<head>
-  <meta charset="utf-8">
-  <title>To-Do lists</title>
-</head>
-<body>
-  <header>
-    <h1>To-Do lists</h1>
-  </header>
-  <main>
-    <form method="POST" action="/list/new">
-    <input id="id-new-item" name='new-item' placeholder="Submit a item for saving">
-    {% csrf_token %}
-    </form>
-  </main>
-</body>
-</html>
+{% extends 'base.html' %}
+{% block title %}To-Do lists{% endblock %}
+{% block head %}To-Do lists{% endblock %}
+{% block action %}{% url 'lists:new' %}{% endblock %}

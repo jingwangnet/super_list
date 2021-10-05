@@ -1,0 +1,21 @@
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}{% endblock %}</title>
+  {% block css_link %}{% endblock %}
+</head>
+<body>
+  <header>
+    <h1>{% block head %}{% endblock %}</h1>
+  </header>
+  <main>
+    <form method="POST" action="{% block action %}{% endblock %}">
+    <input id="id-new-item" name='new-item' placeholder="Submit a item for saving">
+    {% csrf_token %}
+    </form>
+    {% block table %}
+    {% endblock %}
+  </main>
+</body>
+</html>
