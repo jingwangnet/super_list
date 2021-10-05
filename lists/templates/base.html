@@ -4,10 +4,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{% block title %}{% endblock %}</title>
   {% block css_link %}{% endblock %}
+  {% load static %}
+  <link rel="stylesheet" href="{% static  'lists/css/main.css' %}">
 </head>
 <body>
   <header>
-    <h1>{% block head %}{% endblock %}</h1>
+    <a href={% url 'home' %}><h1>{% block head %}{% endblock %}</h1></a>
   </header>
   <main>
     <form method="POST" action="{% block action %}{% endblock %}">

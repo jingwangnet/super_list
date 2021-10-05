@@ -1,23 +1,24 @@
-from selenium.webdriver.firefox.options import Options
+from selenium.webdriver.chrome.options import Options
 from selenium.common.exceptions import WebDriverException
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
 from selenium import webdriver
 from django.test import LiveServerTestCase
+from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 import unittest
 import time
 
 MAX_TIME = 3
 
 
-class NewVisitorTest(LiveServerTestCase):
+class NewVisitorTest(StaticLiveServerTestCase):
    
 
     def setUp(self):
         options = Options()
         options.headless = True
 
-        self.browser = webdriver.Firefox(options=options)
+        self.browser = webdriver.Chrome(options=options)
 
     def tearDown(self):
         self.browser.close()

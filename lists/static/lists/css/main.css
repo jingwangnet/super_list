@@ -1,0 +1,81 @@
+* {
+   padding: 0;
+   margin: 0;
+   box-sizing: border-box;
+}
+body {
+  max-width: 100vw;
+  max-height: 100vh;
+  min-height: 100vh;
+  display: flex;
+  flex-flow: column nowrap;
+}
+
+main, header {
+  width: 50vw;
+  margin: 0 auto;
+}
+
+header {
+  text-align: center;
+  height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+}
+
+header a  {
+  text-decoration: none;
+  color: black;
+}
+
+main {
+  flex: 1 1 auto;
+  padding: 1rem;
+
+  display: flex;
+  flex-flow: column nowrap;
+  align-items: center;
+}
+
+
+main form,  main  table {
+  width: 80%;
+}
+
+main form {
+  margin-bottom: 2rem;
+}
+
+main form input {
+  width: 100%;
+  height: 4rem;
+  padding: 1rem;
+  font-size: 1.5rem;
+}
+
+table, tbody, tr, td, th {
+  display: block;
+}
+
+table {
+  font-size: 1.5rem;
+}
+
+tbody {
+  width: 100%;
+}
+
+table tr:not(:last-child) {
+  margin-bottom: 1rem;
+
+}
+
+table tr:nth-child(even) {
+  background: grey;
+}
+
+table td {
+  padding: 1rem;
+}
