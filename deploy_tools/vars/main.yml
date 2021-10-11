@@ -1,0 +1,31 @@
+---
+apps: 
+  - python3-virtualenv
+  - nginx
+  - git
+
+
+project_name: "super_list"
+
+sites_dir: "{{ ansible_facts.user_dir }}/sites"
+project_dir: "{{ sites_dir }}/{{ project_name }}"
+source_dir: "{{ project_dir }}/source"
+virtualenv_dir: "{{ project_dir }}/virtualenv"
+database_dir: "{{ project_dir }}/database"
+static_dir: "{{ project_dir }}/static"
+
+socket_dir: "/run/gunicorn/"  # become
+socket_file: "/run/gunicorn/{{ project_name }}.sock"
+log_dir: "/var/log/gunicorn/" # become
+
+error_log: "/var/log/gunicorn/{{ project_name }}_error.log"  
+access_log: "/var/log/gunicorn/{{ project_name }}_access.log" 
+
+sites_available_dir: "/etc/nginx/sites-available" 
+sites_enabled_dir: "/etc/nginx/sites-enabled"
+
+requirements_txt: "{{ source_dir }}/requirements.txt"
+settings_file: "{{ source_dir }}/{{ project_name }}/settings.py"
+
+
+...

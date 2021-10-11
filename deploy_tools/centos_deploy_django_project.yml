@@ -1,0 +1,185 @@
+---
+- name: Deploy django project in CentOS
+  hosts: centos 
+  vars:
+    - git_repo: "git@github.com:jingwangnet/super_list.git"
+  vars_files:
+    - vars/main.yml 
+  tasks:
+    - name: Test {{ play_hosts }} environment
+      fail:
+        msg: > 
+          "Does not supported {{ ansible_os_family}} OS family."
+          "Supported RedHat OS family"
+      when: ansible_facts['os_family'] != "RedHat"
+
+    - name: Install {{ apps }}
+      yum: 
+        name: "{{ apps }}"
+        state: latest
+      become: True
+    
+    - name: Create directory
+      block:
+        - name: Create directory in {{ ansible_facts.user_dir }}
+          file:
+            path: "{{ item }}"
+            state: directory
+          vars: 
+            - dirs:
+              - "{{ sites_dir }}"
+              - "{{ project_dir }}"
+              - "{{ source_dir }}" 
+              - "{{ virtualenv_dir }}"
+              - "{{ database_dir }}"
+              - "{{ static_dir }}"
+          loop: "{{ dirs }}"
+
+        - name: Create directory out {{ ansible_facts.user_dir }}
+          file:
+            path: "{{ item }}"
+            state: directory
+            owner: "{{ ansible_ssh_user }}"
+            group: "{{ ansible_ssh_user }}"
+          become: true
+          vars: 
+            - dirs:
+              - "{{ socket_dir }}"
+              - "{{ log_dir }}"
+          loop: "{{ dirs }}"
+
+        - name: Change home dir permission 750  
+          file:
+            path: "{{ ansible_facts.user_dir }}"
+            mode: "0750"
+
+    - name: "Add user of nginx to {{ ansible_facts.user_id }}'s group"  # for nginx access static files 
+      user:
+        name: nginx
+        groups: "{{ ansible_ssh_user }}"
+      become: true
+
+    - name: Pull source
+      git:
+        repo: "{{ git_repo }}"
+        dest: "{{ source_dir }}"
+        force: true
+
+    - name: Install python modules with virtualenv
+      pip:
+        requirements:  "{{ requirements_txt }}"
+        virtualenv: "{{ virtualenv_dir }}"
+
+    - name: Config django settings file
+      block:
+        - name: Disable Debug
+          lineinfile:
+            path: "{{ settings_file }}"
+            regex: '^DEBUG = True$' 
+            line: "DEBUG = False"
+
+        - name: Add damain 
+          lineinfile:
+            path: "{{ settings_file }}"
+            regex: '^ALLOWED_HOSTS = \[\]$' 
+            line: "ALLOWED_HOSTS = ['localhost', '{{ ansible_ssh_host }}']"
+
+        - name: Config STATIC_ROOT
+          lineinfile:
+            path: "{{ settings_file }}"
+            insertafter: '^STATIC_URL'
+            line: "STATIC_ROOT = BASE_DIR / '../static/'"         
+
+        - name: Config database
+          lineinfile:
+            path: "{{ settings_file }}"
+            regex: "^(.+)('NAME': BASE_DIR /)"
+            line: "\\1\\2 '../database/db.sqlite3'"
+            backrefs: yes
+
+    - name: Initial django setup
+      block:
+        - name: Collect static files
+          community.general.django_manage:
+            command: collectstatic
+            virtualenv: "{{ virtualenv_dir }}"
+            project_path: "{{ source_dir }}"
+
+        - name: Initial database 
+          community.general.django_manage:
+            command: migrate
+            virtualenv: "{{ virtualenv_dir }}"
+            project_path: "{{ source_dir }}"
+
+ 
+    - name: Add nginx config 
+      block:
+        - name: Update nginx config 
+          lineinfile:
+            path: '/etc/nginx/nginx.conf'
+            insertafter: '(.*)include /etc/nginx/conf.d/\*\.conf;'
+            line: '    include /etc/nginx/sites-enabled/*.conf;'
+          become: true
+
+        - name: Add nginx configuire dir
+          file:
+            path: "{{ item }}"
+            state: directory
+          become: true
+          loop:
+            - "{{ sites_available_dir }}"
+            - "{{ sites_enabled_dir }}"
+          
+        - name: Add config to sites-available
+          template:
+            src: ./templates/nginx.conf.j2
+            dest: '{{ sites_available_dir }}/{{ project_name }}.conf'
+          become: true
+            
+            
+
+        - name:  Link config to sites-enabled form sites-available
+          file:
+            src: '{{ sites_available_dir }}/{{ project_name }}.conf'
+            dest: '{{ sites_enabled_dir }}/{{ project_name }}.conf'
+            state: link
+          become: true
+          notify: Restart nginx
+
+    - name: Write gunicorn service script
+      template:
+        src: ./templates/gunicorn.service.j2
+        dest: '/etc/systemd/system/gunicorn_{{ project_name }}.service'
+      become: true
+      notify: Restart gunicorn
+        
+
+  handlers: 
+    - name: Restart nginx
+      systemd:
+        state: restarted
+        name: nginx
+      become: true
+
+    - name: Restart gunicorn
+      systemd:
+        daemon_reload: true
+        enabled: true
+        state: restarted
+        name: "gunicorn_{{ project_name }}"
+      become: true
+
+- name: Test Deploy 
+  hosts: centos 
+  tasks:
+    - name: visit the web
+      uri:
+        url: "http://{{ ansible_ssh_host }}"
+        status_code: 200
+        return_content: true
+      register: result
+
+    - name: show the result
+      debug: var=result
+
+
