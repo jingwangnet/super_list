@@ -28,6 +28,7 @@ requirements_txt: "{{ source_dir }}/requirements.txt"
 settings_file: "{{ source_dir }}/{{ project_name }}/settings.py"
 
 gunicorn_service: "gunicorn_{{ project_name }}"
+gunicorn_service_file: '/etc/systemd/system/{{ gunicorn_service }}.service'
 
 
 ...

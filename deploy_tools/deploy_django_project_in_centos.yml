@@ -149,7 +149,7 @@
     - name: Write gunicorn service script
       template:
         src: ./templates/gunicorn.service.j2
-        dest: '/etc/systemd/system/{{ gunicorn_service }}.service'
+        dest: '{{ gunicorn_service_file }}'
       become: true
       notify: Restart gunicorn
         
