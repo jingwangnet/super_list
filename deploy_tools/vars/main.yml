@@ -27,5 +27,7 @@ sites_enabled_dir: "/etc/nginx/sites-enabled"
 requirements_txt: "{{ source_dir }}/requirements.txt"
 settings_file: "{{ source_dir }}/{{ project_name }}/settings.py"
 
+gunicorn_service: "gunicorn_{{ project_name }}"
+
 
 ...
