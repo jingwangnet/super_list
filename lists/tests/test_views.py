@@ -1,8 +1,5 @@
 from django.test import TestCase
-from django.urls import resolve
-from django.http import HttpRequest
-from .views import home_page
-from .models import Item, List
+from lists.models import Item, List
 
 # Create your tests here.
 class HomePageTest(TestCase):
