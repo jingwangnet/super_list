@@ -1,0 +1,72 @@
+---
+- name: Deploy django project in CentOS
+  hosts: centos 
+  vars_files:
+    - vars/main.yml 
+  tasks:
+    - name: Stop services
+      block: 
+      - name: stop nginx
+        systemd:
+          name: nginx
+          state: stopped
+          enabled: false
+        become: true
+
+      - name: stop  gunicorn
+        systemd:
+          daemon_reload: true
+          name: "{{ gunicorn_service }}"
+          state: stopped
+          enabled: false
+        become: true
+
+    - name: remove {{ apps }}
+      yum:
+        name: "{{ apps }}"
+        state: absent
+      become: true
+
+    - name: delete files
+      block:
+      - name: delete nginx config files
+        file:
+          path: /etc/nginx/
+          state: absent
+        become: true
+
+      - name: delete gunicorn config files
+        file:
+          path: "{{ gunicorn_service_file }}"
+          state: absent 
+        become: true
+
+      - name: delete sites dir 
+        file:
+          path: "{{ sites_dir }}"
+          state: absent
+
+      - name: delete log and socket dir
+        file:
+          path:  "{{ item }}"
+          state: absent
+        become: true
+        vars: 
+          - dirs:
+            - "{{ socket_dir }}"
+            - "{{ log_dir }}"
+        loop: "{{ dirs }}"
+
+    - name: Change home dir permission 750  
+      file:
+        path: "{{ ansible_facts.user_dir }}"
+        mode: "0700"
+
+
+      
+          
+
+
+
+
+
