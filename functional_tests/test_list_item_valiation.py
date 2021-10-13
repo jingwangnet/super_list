@@ -13,27 +13,29 @@ class ItemValidationTest(FunctionalTest):
         self.browser.find_element(By.ID, 'id-new-item').send_keys(Keys.ENTER)
         # he got a error message
         self.wait_for(lambda: self.assertEqual(
-            self.browser.find_element(By.CSS_SELECTOR, '.has_error').text,
-            'You can\'t have an empty item.'
+            self.browser.find_element(By.CSS_SELECTOR, '.has-error').text,
+            'You can\'t have an empty item'
         ))
         # John submits 'I will go shoping'
-        self.browser.find_element(By.ID, 'id-new-item').send_keys('I will go shiping')
-        self.browser.find_element(By.ID, 'id-new-item').send_keys(Keys.ENTER)
+        inputbox = self.browser.find_element(By.ID, 'id-new-item')
+        inputbox.send_keys('I will go shiping')
+        inputbox.send_keys(Keys.ENTER)
         # '1. I will go shoping.' appears the table of the page.
         self.wait_for_check_row_in_the_table('1. I will go shiping')
         # he input a item of empty again 
         self.browser.find_element(By.ID, 'id-new-item').send_keys(Keys.ENTER)
         # he got a error message too
         self.wait_for(lambda: self.assertEqual(
-            self.browser.find_element(By.CSS_SELECTOR, '.has_error').text,
-            'You can\'t have an empty item.'
+            self.browser.find_element(By.CSS_SELECTOR, '.has-error').text,
+            'You can\'t have an empty item'
         ))
         # John submits 'I will get a date with mary'
-        self.browser.find_element(By.ID, 'id-new-item').send_keys('I ill get a date with mary')
-        self.browser.find_element(By.ID, 'id-new-item').send_keys(Keys.ENTER)
+        inputbox = self.browser.find_element(By.ID, 'id-new-item')
+        inputbox.send_keys('I ill get a date with mary')
+        inputbox.send_keys(Keys.ENTER)
         # '2. I will get a date with mary.' appears the table of the page.
         # '1. I will go shoping.' appears the table of the page.
-        self.wait_for_check_row_in_the_table('1. I will get a date with mary')
+        self.wait_for_check_row_in_the_table('2. I will get a date with mary')
         self.wait_for_check_row_in_the_table('1. I will go shiping')
 
 

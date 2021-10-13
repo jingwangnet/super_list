@@ -1,6 +1,6 @@
 ---
 - name: Deploy django project in CentOS
-  hosts: centos 
+  hosts: all 
   vars:
     - git_repo: "git@github.com:jingwangnet/super_list.git"
   vars_files:
@@ -21,7 +21,7 @@
     
     - name: Create directory
       block:
-        - name: Create directory in {{ ansible_facts.user_dir }}
+        - name: Create directory in home_dir 
           file:
             path: "{{ item }}"
             state: directory
@@ -35,7 +35,7 @@
               - "{{ static_dir }}"
           loop: "{{ dirs }}"
 
-        - name: Create directory out {{ ansible_facts.user_dir }}
+        - name: Create directory out  home_dir
           file:
             path: "{{ item }}"
             state: directory
@@ -170,7 +170,7 @@
       become: true
 
 - name: Test Deploy 
-  hosts: centos 
+  hosts: all  
   tasks:
     - name: visit the web
       uri:
