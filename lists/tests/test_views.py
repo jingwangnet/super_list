@@ -77,15 +77,11 @@ class ViewListTest(TestCase):
 
         Item.objects.create(text='other first item', list=list_)
 
-
-class AddItemTest(TestCase):
-
-
     def test_add_item_can_save_a_post_request_for_exsit_list(self):
         other_list = List.objects.create()
         correct_list = List.objects.create()
         context = {'new-item': 'A new item'}
-        response = self.client.post(f'/list/{correct_list.pk}/add', data=context)
+        response = self.client.post(f'/list/{correct_list.pk}/', data=context)
         html = response.content.decode()
 
         self.assertEqual(1, Item.objects.count())
@@ -95,11 +91,25 @@ class AddItemTest(TestCase):
     def test_add_item_can_redirect_after_post_request(self):
         context = {'new-item': 'A new item'}
         list_ = List.objects.create()
-        response = self.client.post(f'/list/{list_.pk}/add', data=context)
+        response = self.client.post(f'/list/{list_.pk}/', data=context)
         html = response.content.decode()
 
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response['location'], f'/list/{list_.pk}/')
+
+    def test_validation_error_end_on_view_list_page(self):
+        list_ = List.objects.create()
+        context = {'new-item': ''}
+        response = self.client.post(f'/list/{list_.pk}/', data=context)
+        
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'lists/list.html')
+        expect_error = "You can't save an empty item"
+        self.assertContains(response, expect_error)
+   
+
+
+
 
         
 class ItemAndListTest(TestCase):

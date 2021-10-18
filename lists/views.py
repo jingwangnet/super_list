@@ -21,10 +21,16 @@ def new_list(request):
 
 def view_list(request, pk):
     list_ = List.objects.get(pk=pk)
-    context = {'list': list_}
+    error = None
+    if request.method == "POST":
+        try:
+            item = Item(text=request.POST['new-item'], list=list_)
+            item.full_clean()
+            item.save()
+            return redirect(f'/list/{list_.pk}/')
+        except ValidationError:
+            error = "You can't save an empty item"
+  
+    context = {'list': list_, 'error': error}
     return render(request, 'lists/list.html', context)
     
-def add_item(request, pk):
-    list_ = List.objects.get(pk=pk)
-    item = Item.objects.create(text=request.POST['new-item'], list=list_)
-    return redirect(f'/list/{list_.pk}/')

@@ -31,7 +31,7 @@ class ItemValidationTest(FunctionalTest):
         ))
         # John submits 'I will get a date with mary'
         inputbox = self.browser.find_element(By.ID, 'id-new-item')
-        inputbox.send_keys('I ill get a date with mary')
+        inputbox.send_keys('I will get a date with mary')
         inputbox.send_keys(Keys.ENTER)
         # '2. I will get a date with mary.' appears the table of the page.
         # '1. I will go shoping.' appears the table of the page.
