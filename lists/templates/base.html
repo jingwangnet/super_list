@@ -15,6 +15,9 @@
     <form method="POST" action="{% block action %}{% endblock %}">
     <input id="id-new-item" name='new-item' placeholder="Submit a item for saving">
     {% csrf_token %}
+    {% if error %}
+    <p class="has-error">You can't save an empty item</p>
+    {% endif %}
     </form>
     {% block table %}
     {% endblock %}

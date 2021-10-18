@@ -30,6 +30,21 @@ class NewListTest(TestCase):
 
         self.assertRedirects(response, f'/list/{list_.pk}/')
 
+    def test_validation_errors_are_sent_back_up_home_page_template(self):
+        context = {'new-item': ''}
+        response = self.client.post('/list/new', data=context)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'lists/index.html')
+        expect_error = "You can't save an empty item"
+        self.assertContains(response, expect_error)
+
+    def test_dont_save_invlidation_list_item(self):
+        context = {'new-item': ''}
+        response = self.client.post('/list/new', data=context)
+        self.assertEqual(Item.objects.count(), 0)
+        self.assertEqual(List.objects.count(), 0)
+
+
 
 class ViewListTest(TestCase):
 

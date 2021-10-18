@@ -79,3 +79,8 @@ table tr:nth-child(even) {
 table td {
   padding: 1rem;
 }
+
+form p.has-error {
+  padding: 1rem; 
+  color: red;
+}
