@@ -11,3 +11,12 @@ class ItemFormTest(TestCase):
         self.assertIn('id="id-new-item"', itemform.as_p())
         self.assertIn('placeholder="Submit a item for saving"', itemform.as_p())
 
+    def test_form_item_validation_for_blank_item(self):
+        itemform = ItemForm(data={"new-text":''})
+        self.assertFalse(itemform.is_valid())
+        self.assertIn(
+            "You can't save an empty item",
+            itemform.errors['text']
+        )
+       
+

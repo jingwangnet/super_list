@@ -19,4 +19,9 @@ class ItemForm(forms.models.ModelForm):
             'placeholder': 'Submit a item for saving'
             }),
         }
+        error_messages = {
+            'text': {
+                'required': "You can't save an empty item",
+            },
+        }
     
