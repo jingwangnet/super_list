@@ -22,5 +22,8 @@ class ItemForm(forms.models.ModelForm):
             },
         }
  
+    def save(self, for_list, *args, **kwargs):
+        self.instance.list = for_list
+        return super().save(*args, **kwargs)
                 
     

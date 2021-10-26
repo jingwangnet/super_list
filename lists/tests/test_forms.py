@@ -19,6 +19,10 @@ class ItemFormTest(TestCase):
             itemform.errors['text']
         )
     
+    def test_form_saving_handels_a_list(self): 
+        list_ = List.objects.create()
+        itemform = ItemForm(data={'text': 'do it'})
+        itemform.save(for_list=list_) 
        
         
        
