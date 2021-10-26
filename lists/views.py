@@ -2,35 +2,31 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.core.exceptions import ValidationError
 from .models import Item, List
+from .forms import ItemForm
 
 # Create your views here.
 def home_page(request):
-    return render(request, 'lists/index.html')
+    itemform = ItemForm()
+    return render(request, 'lists/index.html', {'form': itemform})
     
 def new_list(request):
-    list_ = List.objects.create()
-    item = Item(text=request.POST['new-item'], list=list_)
-    try: 
-        item.full_clean()
-        item.save()
-    except ValidationError:
-        list_.delete()
-        error = "You can't save an empty item"
-        return render(request, 'lists/index.html', {'error': error})
-    return redirect(list_)
+    itemform = ItemForm(data=request.POST)
+    if itemform.is_valid():
+        list_ = List.objects.create() 
+        Item.objects.create(list=list_, text=request.POST['text'])
+        return redirect(list_)
+    else:
+        return render(request, 'lists/index.html', {'form': itemform})
+       
 
 def view_list(request, pk):
     list_ = List.objects.get(pk=pk)
-    error = None
+    itemform = ItemForm()
     if request.method == "POST":
-        try:
-            item = Item(text=request.POST['new-item'], list=list_)
-            item.full_clean()
-            item.save()
+        itemform = ItemForm(data=request.POST)
+        if itemform.is_valid():
+            Item.objects.create(text=request.POST['text'], list=list_)
             return redirect(list_)
-        except ValidationError:
-            error = "You can't save an empty item"
-  
-    context = {'list': list_, 'error': error}
+    context = {'list': list_, 'form': itemform}
     return render(request, 'lists/list.html', context)
     

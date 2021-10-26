@@ -12,10 +12,9 @@ class ItemValidationTest(FunctionalTest):
         # he input a item of empty 
         self.browser.find_element(By.ID, 'id-new-item').send_keys(Keys.ENTER)
         # he got a error message
-        self.wait_for(lambda: self.assertEqual(
-            self.browser.find_element(By.CSS_SELECTOR, '.has-error').text,
-            'You can\'t save an empty item'
-        ))
+        self.wait_for(
+            lambda: self.browser.find_element(By.CSS_SELECTOR, '#id-new-item:invalid')
+        )
         # John submits 'I will go shoping'
         inputbox = self.browser.find_element(By.ID, 'id-new-item')
         inputbox.send_keys('I will go shiping')
@@ -25,10 +24,9 @@ class ItemValidationTest(FunctionalTest):
         # he input a item of empty again 
         self.browser.find_element(By.ID, 'id-new-item').send_keys(Keys.ENTER)
         # he got a error message too
-        self.wait_for(lambda: self.assertEqual(
-            self.browser.find_element(By.CSS_SELECTOR, '.has-error').text,
-            'You can\'t save an empty item'
-        ))
+        self.wait_for(
+            lambda: self.browser.find_element(By.CSS_SELECTOR, '#id-new-item:invalid')
+        )
         # John submits 'I will get a date with mary'
         inputbox = self.browser.find_element(By.ID, 'id-new-item')
         inputbox.send_keys('I will get a date with mary')

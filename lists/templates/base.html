@@ -13,10 +13,10 @@
   </header>
   <main>
     <form method="POST" action="{% block action %}{% endblock %}">
-    <input id="id-new-item" name='new-item' placeholder="Submit a item for saving">
+    {{ form.text }}
     {% csrf_token %}
-    {% if error %}
-    <p class="has-error">You can't save an empty item</p>
+    {% if form.errors %}
+    <p class="has-error">{{ form.text.errors }}</p>
     {% endif %}
     </form>
     {% block table %}
