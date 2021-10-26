@@ -1,7 +1,8 @@
 from django.test import TestCase
 from lists.models import Item, List
-from lists.forms import ItemForm
+from lists.forms import ItemForm, ExistingListItemForm
 from django.utils.html import escape
+from unittest import skip
 
 # Create your tests here.
 class HomePageTest(TestCase):
@@ -121,7 +122,21 @@ class ViewListTest(TestCase):
     def test_display_item_form(self):
         list_ = List.objects.create()
         response = self.client.get(f'/list/{list_.pk}/')
-        self.assertIsInstance(response.context['form'], ItemForm)
+        self.assertIsInstance(response.context['form'], ExistingListItemForm)
+        
+ 
+    def test_duplicate_item_validtaion_eeors_end_on_list_pages(self):
+        list1 = List.objects.create()
+        item1 = Item.objects.create(list=list1, text='text')
+        response = self.client.post(
+            f'/list/{list1.id}/',
+            data={'text': 'text'}
+         )
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'lists/list.html')
+        expect_error = escape("You've already got this in your list")
+        self.assertContains(response, expect_error)
+    
         
    
 

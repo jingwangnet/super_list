@@ -36,4 +36,20 @@ class ItemValidationTest(FunctionalTest):
         self.wait_for_check_row_in_the_table('2. I will get a date with mary')
         self.wait_for_check_row_in_the_table('1. I will go shiping')
 
+    def test_cannot_duplicate_items(self):
+        # jing visit homepage  and create new list 
+        self.browser.get(self.live_server_url)
+        inputbox = self.browser.find_element(By.ID, 'id-new-item')
+        inputbox.send_keys('bla')
+        inputbox.send_keys(Keys.ENTER)
+        self.wait_for_check_row_in_the_table('1. bla')
+        self.browser.get(self.live_server_url)
+        # she is cerate a duplicate item
+        inputbox = self.browser.find_element(By.ID, 'id-new-item')
+        inputbox.send_keys('bla')
+        # she got a help error infomation
+        self.wait_for(lambda: self.assertEqual(
+            self.browser.find_element(By.CSS_SELECTOR, '.has-error').text,
+            "You've alreandy got this in your list"
+        ))
 
